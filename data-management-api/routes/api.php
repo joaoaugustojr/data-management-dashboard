@@ -1,7 +1,7 @@
 <?php
 
+use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\UserController;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -20,3 +20,6 @@ Route::get('/', fn() => ['message' => 'success']);
 
 // User Routes
 Route::apiResource('/users', UserController::class);
+
+// Payment Routes
+Route::apiResource('/payments', PaymentController::class);

@@ -2,19 +2,16 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
-
+use App\Enums\PaymentStatus;
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Foundation\Auth\User as Authenticatable;
-use Illuminate\Notifications\Notifiable;
-use Laravel\Sanctum\HasApiTokens;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Mehradsadeghi\FilterQueryString\FilterQueryString;
 
-class User extends Authenticatable
+class Payment extends Model
 {
-    use HasApiTokens, HasFactory, Notifiable, HasUlids;
+    use HasFactory, HasUlids;
     use FilterQueryString;
 
     /**
@@ -23,9 +20,10 @@ class User extends Authenticatable
      * @var array<int, string>
      */
     protected $fillable = [
-        'name',
-        'email',
-        'image',
+        'user_id',
+        'default',
+        'status',
+        'amount',
     ];
 
     /**
@@ -34,7 +32,8 @@ class User extends Authenticatable
      * @var array<int, string>
      */
     protected $filters = [
-        'name',
+        'user_id',
+        'status',
         'email',
     ];
 
@@ -46,13 +45,17 @@ class User extends Authenticatable
     protected function casts(): array
     {
         return [
+            'status' => PaymentStatus::class,
             'created_at' => 'datetime',
             'updated_at' => 'datetime'
         ];
     }
 
-    public function payments(): HasMany
+    /**
+     * Get the user that owns the payment.
+     */
+    public function user(): BelongsTo
     {
-        return $this->hasMany(Payment::class, "user_id");
+        return $this->belongsTo(User::class);
     }
 }
