@@ -1,0 +1,22 @@
+{
+  "editor.defaultFormatter": "Vue.volar",
+  "editor.formatOnSave": true,
+  "[vue]": {
+    "editor.defaultFormatter": "Wscats.vue"
+  },
+  "files.associations": {
+    "*.css": "tailwindcss"
+  },
+  "editor.quickSuggestions": {
+    "strings": true
+  },
+  "eslint.useFlatConfig": true,
+  "[tailwindcss]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "cSpell.words": ["hugeicons", "shadcn"],
+  "tailwindCSS.classAttributes": ["class", "ui"],
+  "tailwindCSS.experimental.classRegex": [
+    ["ui:\\s*{([^)]*)\\s*}", "(?:'|\"|`)([^']*)(?:'|\"|`)"]
+  ]
+}
