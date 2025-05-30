@@ -36,7 +36,15 @@ class User extends Authenticatable
     protected $filters = [
         'name',
         'email',
+        'like',
+        'in'
     ];
+
+    public function name($query, $value)
+    {
+        $value = strtolower(trim($value));
+        return $query->whereRaw('LOWER(name) LIKE ?', ['%' . $value . '%']);
+    }
 
     /**
      * The attributes that should be casts to native types.

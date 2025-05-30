@@ -17,7 +17,7 @@ class UserController extends Controller
      */
     public function index(): JsonResponse
     {
-        $users = User::filter()->get();
+        $users = User::filter()->paginate(10);
         return $this->response(Response::HTTP_OK, UserResource::collection($users));
     }
 

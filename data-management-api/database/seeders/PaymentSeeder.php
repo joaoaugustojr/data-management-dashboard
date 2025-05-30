@@ -13,7 +13,7 @@ class PaymentSeeder extends Seeder
      */
     public function run(): void
     {
-        $users = User::factory(15)->create();
+        $users = User::factory(30)->create();
 
         foreach ($users as $user) {
             Payment::factory()->create([

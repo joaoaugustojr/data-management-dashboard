@@ -11,7 +11,6 @@ use App\Models\Payment;
 use App\Traits\HttpResponses;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Response;
-use Illuminate\Support\Facades\DB;
 
 class PaymentController extends Controller
 {
@@ -22,7 +21,8 @@ class PaymentController extends Controller
      */
     public function index(): JsonResponse
     {
-        return $this->response(Response::HTTP_OK, PaymentResource::collection(Payment::filter()->get()));
+        $payments = Payment::filter()->with('user')->get();
+        return $this->response(Response::HTTP_OK, PaymentResource::collection($payments));
     }
 
     /**
