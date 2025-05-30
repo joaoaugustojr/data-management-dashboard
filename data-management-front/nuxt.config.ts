@@ -1,4 +1,6 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
+import dotenv from "dotenv";
+dotenv.config();
 
 import tailwindcss from "@tailwindcss/vite";
 
@@ -14,6 +16,10 @@ export default defineNuxtConfig({
     plugins: [tailwindcss()],
   },
 
+  ui: {
+    colorMode: false,
+  },
+
   googleFonts: {
     display: "block",
     families: {
@@ -26,6 +32,12 @@ export default defineNuxtConfig({
         ital: "200..700",
       },
       Poppins: [100, 200, 300, 400, 500, 600, 700, 800, 900],
+    },
+  },
+
+  runtimeConfig: {
+    public: {
+      apiBase: process.env.API_URL || "http://localhost:80/api",
     },
   },
 });
