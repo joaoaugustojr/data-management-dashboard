@@ -14,6 +14,8 @@ const { payments } = toRefs(paymentsStore);
 paymentsStore.loadPayments();
 
 const toast = useToast();
+const showEditModal = ref(false);
+const payment = ref<Payment>();
 
 function getRowItems(row: Row<Payment>) {
   return [
@@ -38,6 +40,10 @@ function getRowItems(row: Row<Payment>) {
     },
     {
       label: "Edit",
+      onSelect() {
+        payment.value = row.original;
+        showEditModal.value = true;
+      },
     },
     {
       label: "Remove",
@@ -127,11 +133,16 @@ const columns: TableColumn<Payment>[] = [
       <UCard>
         <div class="flex justify-between items-center">
           <div class="flex gap-2">
-            <h1>Payment History</h1>
             <Icon name="hugeicons:credit-card" size="25" />
+            <h1>Payment History</h1>
           </div>
-          <UModal title="Create Payment">
-            <UButton>Create Payment</UButton>
+          <UModal
+            title="Create Payment"
+            :close="{
+              class: 'close-modal',
+            }"
+          >
+            <UButton @click.stop="">Create Payment</UButton>
             <template #body>
               <FormPayment />
             </template>
@@ -148,5 +159,16 @@ const columns: TableColumn<Payment>[] = [
         />
       </UCard>
     </div>
+    <UModal
+      v-model:open="showEditModal"
+      title="Edit Payment"
+      :close="{
+        class: 'close-modal',
+      }"
+    >
+      <template #body>
+        <FormPayment is-edit :payment />
+      </template>
+    </UModal>
   </NuxtLayout>
 </template>

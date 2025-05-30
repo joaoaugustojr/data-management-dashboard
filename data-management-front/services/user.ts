@@ -1,7 +1,10 @@
-export const getUsers = async () => {
-  const response = await useApi("users", {
-    method: "GET",
-  });
+export const getUsers = async (name?: string) => {
+  const params: Record<string, string> = {};
 
-  return response;
+  return await useApi("users", {
+    method: "GET",
+    params: {
+      name,
+    },
+  });
 };
