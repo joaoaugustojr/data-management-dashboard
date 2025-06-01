@@ -10,11 +10,14 @@ const { onEdit } = defineProps<{
 const toast = useToast();
 
 const paymentsStore = usePaymentStore();
-const { payments } = toRefs(paymentsStore);
+const { payments, statusOptions } = toRefs(paymentsStore);
 
 const UButton = resolveComponent("UButton");
 const UBadge = resolveComponent("UBadge");
 const UDropdownMenu = resolveComponent("UDropdownMenu");
+
+const { clearFilters } = usePaymentTableStore();
+const { columnFilters, hasFilters } = toRefs(usePaymentTableStore());
 
 const handleSort = async (column: Column<Payment>) => {
   const direction =
@@ -25,6 +28,8 @@ const handleSort = async (column: Column<Payment>) => {
   await paymentsStore.loadPayments({
     sort: `${column.id},${direction}`,
   });
+
+  await nextTick();
 
   column.toggleSorting(column.getIsSorted() === "asc");
 };
@@ -178,6 +183,31 @@ const columns: TableColumn<Payment>[] = [
 </script>
 
 <template>
+  <div class="flex pb-6 border-b border-accented gap-4 justify-between">
+    <div class="flex gap-4">
+      <USelectMenu
+        v-model="columnFilters.status"
+        placeholder="Filter by status"
+        value-key="id"
+        :items="statusOptions"
+        class="w-45"
+      />
+      <UInput
+        v-model="columnFilters.user_name"
+        class="max-w-sm"
+        placeholder="Filter by name"
+      />
+      <UInput
+        v-model="columnFilters.user_email"
+        class="max-w-sm"
+        placeholder="Filter by email"
+      />
+    </div>
+    <UButton v-if="hasFilters" variant="link" @click="clearFilters">
+      clear filters
+      <Icon name="lucide:x" class="w-4 h-4" />
+    </UButton>
+  </div>
   <UTable
     :data="payments"
     :columns

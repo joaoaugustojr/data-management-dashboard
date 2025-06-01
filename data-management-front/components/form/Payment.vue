@@ -14,6 +14,7 @@ const { payment, isEdit = false } = defineProps<{
 const toast = useToast();
 const userStore = useUserStore();
 const paymentsStore = usePaymentStore();
+const { statusOptions } = toRefs(paymentsStore);
 
 const { users } = toRefs(userStore);
 
@@ -36,25 +37,6 @@ watch(searchTermDebounced, (q) => {
   if (!q) return;
   userStore.loadUsers(q);
 });
-
-const statusOptions = ref([
-  {
-    label: "Pending",
-    id: "pending",
-  },
-  {
-    label: "Paid",
-    id: "paid",
-  },
-  {
-    label: "Failed",
-    id: "failed",
-  },
-  {
-    label: "Refunded",
-    id: "refunded",
-  },
-]);
 
 const schema = z.object({
   user_id: z.string().nonempty("User is required"),
@@ -137,6 +119,7 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
     <UFormField label="Amount" name="amount">
       <UInputNumber
         v-model="state.amount"
+        :step="0.01"
         :format-options="{
           style: 'currency',
           currency: 'USD',

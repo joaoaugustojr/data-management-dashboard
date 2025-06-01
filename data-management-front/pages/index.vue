@@ -37,7 +37,9 @@ const handleEdit = (row: Row<Payment>) => {
           </UModal>
         </div>
       </UCard>
-      <UCard> <TablePayment @edit="handleEdit" />/ </UCard>
+      <UCard>
+        <TablePayment @edit="handleEdit" />
+      </UCard>
     </div>
     <UModal
       v-model:open="showEditModal"

@@ -3,14 +3,45 @@ import {
   getPayments,
   updatePayment as update,
 } from "~/services/payment";
+
+import { usePaymentTableStore } from "./usePaymentTableStory";
+
 import type { Payment } from "~/types/payment";
 
 export const usePaymentStore = defineStore("payments", () => {
   const payments = ref<Payment[]>([]);
   const loading = ref(false);
 
+  const statusOptions = ref([
+    {
+      label: "Pending",
+      id: "pending",
+    },
+    {
+      label: "Paid",
+      id: "paid",
+    },
+    {
+      label: "Failed",
+      id: "failed",
+    },
+    {
+      label: "Refunded",
+      id: "refunded",
+    },
+  ]);
+
   const loadPayments = async (params?: any) => {
+    const { columnFilters, hasFilters } = usePaymentTableStore();
+
     loading.value = true;
+
+    if (hasFilters) {
+      params = {
+        ...params,
+        ...columnFilters,
+      };
+    }
 
     try {
       const response = await getPayments(params);
@@ -53,5 +84,12 @@ export const usePaymentStore = defineStore("payments", () => {
     }
   };
 
-  return { payments, loading, loadPayments, removePayment, updatePayment };
+  return {
+    payments,
+    statusOptions,
+    loading,
+    loadPayments,
+    removePayment,
+    updatePayment,
+  };
 });
