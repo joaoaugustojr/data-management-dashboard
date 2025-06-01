@@ -2,10 +2,6 @@
 import type { Row } from "@tanstack/vue-table";
 import type { Payment } from "~/types/payment";
 
-// ADD DIALOG WHEM REMOVE DATA
-// PERSIST ORDER
-// TODO: BRING REDIS
-
 const toast = useToast();
 
 const paymentsStore = usePaymentStore();

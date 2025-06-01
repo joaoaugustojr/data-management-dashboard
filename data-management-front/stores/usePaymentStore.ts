@@ -1,6 +1,7 @@
 import {
   deletePayment,
   getPayments,
+  createPayment as create,
   updatePayment as update,
 } from "~/services/payment";
 
@@ -56,7 +57,20 @@ export const usePaymentStore = defineStore("payments", () => {
       payments.value = response.data.value?.data as Payment[];
       total.value = (response.data.value?.meta?.total || 1) as number;
     } catch (error: any) {
-      throw new Error("Failed to load payments", error);
+      throw new Error("Failed to load payments");
+    } finally {
+      loading.value = false;
+    }
+  };
+
+  const createPayment = async (payment: Payment) => {
+    loading.value = true;
+
+    try {
+      await create(payment);
+      await loadPayments();
+    } catch (error: any) {
+      throw new Error("Failed to create payment");
     } finally {
       loading.value = false;
     }
@@ -74,7 +88,7 @@ export const usePaymentStore = defineStore("payments", () => {
 
       Object.assign(found, updatedPayment);
     } catch (error: any) {
-      throw new Error("Failed to update payment", error);
+      throw new Error("Failed to update payment");
     } finally {
       loading.value = false;
     }
@@ -92,7 +106,7 @@ export const usePaymentStore = defineStore("payments", () => {
         page.value = 1;
       }
     } catch (error: any) {
-      throw new Error("Failed to remove payment", error);
+      throw new Error("Failed to remove payment");
     } finally {
       loading.value = false;
     }
@@ -104,6 +118,7 @@ export const usePaymentStore = defineStore("payments", () => {
     statusOptions,
     loading,
     loadPayments,
+    createPayment,
     removePayment,
     updatePayment,
   };

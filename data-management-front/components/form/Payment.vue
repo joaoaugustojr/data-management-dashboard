@@ -88,8 +88,7 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
     return;
   }
 
-  await createPayment(event.data as Payment);
-  await paymentsStore.loadPayments();
+  await paymentsStore.createPayment(event.data as Payment);
 
   document.querySelectorAll<HTMLElement>(".close-modal").forEach((node) => node.click());
 

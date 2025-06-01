@@ -12,7 +12,7 @@ export const useUserStore = defineStore("users", () => {
       const response = await getUsers(name);
       users.value = response.data.value.data as User[];
     } catch (error: any) {
-      throw new Error("Failed to load users", error.message);
+      throw new Error("Failed to load users");
     } finally {
       loading.value = false;
     }

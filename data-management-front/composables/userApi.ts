@@ -18,5 +18,37 @@ export async function useApi<T>(
     headers: {
       ...options.headers,
     },
+    onResponseError({ request, response, options }) {
+      const status = response.status;
+      const toast = useToast();
+
+      switch (status) {
+        case 403:
+          toast.add({
+            title: "Forbidden",
+            description: "Access denied.",
+            color: "error",
+          });
+          break;
+
+        case 500:
+          toast.add({
+            title: "Server Error",
+            description: "Something went wrong.",
+            color: "error",
+          });
+          break;
+
+        default:
+          toast.add({
+            title: "Error",
+            description: `Unexpected error (${status})`,
+            color: "error",
+          });
+          break;
+      }
+
+      console.error("Fetch error:", response);
+    },
   });
 }
