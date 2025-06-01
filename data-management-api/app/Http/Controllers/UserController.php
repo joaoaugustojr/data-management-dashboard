@@ -8,6 +8,7 @@ use App\Models\User;
 use App\Traits\HttpResponses;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Cache;
 
 class UserController extends Controller
 {
@@ -18,7 +19,13 @@ class UserController extends Controller
      */
     public function index(): UserCollection
     {
-        return new UserCollection(User::filter()->paginate());
+        $cacheKey = 'user:page_' . request('page', 1) . ':filters_' . md5(json_encode(request()->all()));
+
+        $users = Cache::remember($cacheKey, now()->addMinutes(10), function () {
+            return User::filter()->paginate();
+        });
+
+        return new UserCollection($users);
     }
 
     /**

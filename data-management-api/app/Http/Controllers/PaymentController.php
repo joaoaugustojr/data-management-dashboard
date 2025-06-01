@@ -12,6 +12,7 @@ use App\Models\Payment;
 use App\Traits\HttpResponses;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Cache;
 
 class PaymentController extends Controller
 {
@@ -22,7 +23,16 @@ class PaymentController extends Controller
      */
     public function index(): PaymentCollection
     {
-        return new PaymentCollection(Payment::filter()->orderBy('created_at', 'desc')->with('user')->paginate());
+        $cacheKey = 'payment:page_' . request('page', 1) . ':filters_' . md5(json_encode(request()->all()));
+
+        $payments = Cache::remember($cacheKey, now()->addMinutes(3), function () {
+            return Payment::filter()
+                ->orderBy('created_at', 'desc')
+                ->with('user')
+                ->paginate();
+        });
+
+        return new PaymentCollection($payments);
     }
 
     /**
