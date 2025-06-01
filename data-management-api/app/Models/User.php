@@ -40,12 +40,6 @@ class User extends Authenticatable
         'in'
     ];
 
-    public function name($query, $value)
-    {
-        $value = strtolower(trim($value));
-        return $query->whereRaw('LOWER(name) LIKE ?', ['%' . $value . '%']);
-    }
-
     /**
      * The attributes that should be casts to native types.
      *
@@ -59,6 +53,18 @@ class User extends Authenticatable
         ];
     }
 
+    /**
+     * Filter by name.
+     */
+    public function name($query, $value): mixed
+    {
+        $value = strtolower(trim($value));
+        return $query->whereRaw('LOWER(name) LIKE ?', ['%' . $value . '%']);
+    }
+
+    /**
+     * Get the payments of the user.
+     */
     public function payments(): HasMany
     {
         return $this->hasMany(Payment::class, "user_id");

@@ -6,6 +6,7 @@ use App\Actions\Payment\CreatePayment;
 use App\Actions\Payment\UpdatePayment;
 use App\Http\Requests\StorePaymentRequest;
 use App\Http\Requests\UpdatePaymentRequest;
+use App\Http\Resources\PaymentCollection;
 use App\Http\Resources\PaymentResource;
 use App\Models\Payment;
 use App\Traits\HttpResponses;
@@ -19,10 +20,9 @@ class PaymentController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index(): JsonResponse
+    public function index(): PaymentCollection
     {
-        $payments = Payment::filter()->with('user')->get();
-        return $this->response(Response::HTTP_OK, PaymentResource::collection($payments));
+        return new PaymentCollection(Payment::filter()->orderBy('created_at', 'desc')->with('user')->paginate());
     }
 
     /**
@@ -52,6 +52,7 @@ class PaymentController extends Controller
     {
         $data = $request->validated();
         $payment = UpdatePayment::handle($payment, $data);
+        $payment->load('user');
 
         return $this->response(Response::HTTP_OK, new PaymentResource($payment));
     }

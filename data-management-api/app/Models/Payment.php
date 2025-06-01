@@ -35,6 +35,7 @@ class Payment extends Model
         'user_id',
         'status',
         'email',
+        'sort',
     ];
 
     /**
@@ -49,6 +50,28 @@ class Payment extends Model
             'created_at' => 'datetime',
             'updated_at' => 'datetime'
         ];
+    }
+
+    /**
+     * Get the sort of the payment.
+     */
+    public function sort($query, $value): mixed
+    {
+        [$field, $direction] = explode(',', $value);
+
+        if ($field === 'user_email') {
+            return $query->select('payments.*')
+                ->join('users', 'payments.user_id', 'users.id')
+                ->orderBy('users.email', $direction);
+        }
+
+        if ($field === 'user_name') {
+            return $query->select('payments.*')
+                ->join('users', 'payments.user_id', 'users.id')
+                ->orderBy('users.name', $direction);
+        }
+
+        return $query->orderBy($field, $direction);
     }
 
     /**

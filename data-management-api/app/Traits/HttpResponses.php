@@ -10,7 +10,10 @@ trait HttpResponses
 {
     public static function response(int $status, array|Model|JsonResource $data = [], string $message = "")
     {
-        return response()->json($data->resource ?? $data, $status);
+        return response()->json([
+            'message' => $message,
+            'data' => $data
+        ], $status);
     }
 
     public static function responseWithError(int $status, array|MessageBag $errors = [], array $data = [], string $message = "")

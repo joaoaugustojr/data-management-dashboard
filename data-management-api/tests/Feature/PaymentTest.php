@@ -16,7 +16,7 @@ it("should create a payment for an user with status pending", function () {
     $response = $this->postJson(route("payments.store"), $data);
 
     $response->assertCreated();
-    $response->assertJson(["user_id" => $user->id, 'status' => PaymentStatus::PENDING->value]);
+    $response->assertJson(["data" => ["user_id" => $user->id, "status" => PaymentStatus::PENDING->value]]);
 });
 
 it("shouldn't create a payment for an unknown user", function () {
@@ -50,7 +50,7 @@ it("should update a payment", function () {
     $response = $this->putJson(route("payments.update", $payment->id), $data);
 
     $response->assertOk();
-    $response->assertJson(['status' => PaymentStatus::PAID->value]);
+    $response->assertJson(['data' => ['status' => PaymentStatus::PAID->value]]);
 });
 
 it("should destroy a payment", function () {
@@ -78,7 +78,7 @@ it("should get a payment", function () {
 
     $response = $this->getJson(route("payments.show", $payment->id));
 
-    $response->assertOk()->assertJson(["id" => $payment->id]);
+    $response->assertOk()->assertJson(["data" => ["id" => $payment->id, "user_id" => $user->id, "status" => PaymentStatus::PENDING->value]]);
 });
 
 it("should get all payments", function () {
@@ -92,7 +92,7 @@ it("should get all payments", function () {
 
     $response = $this->getJson(route("payments.index"));
 
-    $response->assertOk()->assertJsonCount(count($payments));
+    $response->assertOk()->assertJsonCount(count($payments), 'data');
 });
 
 it("should get all payments with filter", function () {
@@ -108,7 +108,7 @@ it("should get all payments with filter", function () {
         'user_id' => $user->id,
     ]);
 
-    $response->assertOk()->assertJsonCount(count($payments));
+    $response->assertOk()->assertJsonCount(count($payments), 'data');
 });
 
 it("shouldn't get payments with filter", function () {
@@ -125,5 +125,5 @@ it("shouldn't get payments with filter", function () {
         'user_id' => $anotherUser->id,
     ]));
 
-    $response->assertOk()->assertJsonCount(0);
+    $response->assertOk()->assertJsonCount(0, 'data');
 });

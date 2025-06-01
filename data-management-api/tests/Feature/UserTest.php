@@ -15,5 +15,5 @@ it("should get user", function () {
 
     $response = $this->getJson(route("users.show", $user->id));
 
-    $response->assertOk()->assertJson(["id" => $user->id]);
+    $response->assertOk()->assertJson(["data" => ["id" => $user->id]]);
 });

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\UserCollection;
 use App\Http\Resources\UserResource;
 use App\Models\User;
 use App\Traits\HttpResponses;
@@ -15,10 +16,9 @@ class UserController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index(): JsonResponse
+    public function index(): UserCollection
     {
-        $users = User::filter()->paginate(10);
-        return $this->response(Response::HTTP_OK, UserResource::collection($users));
+        return new UserCollection(User::filter()->paginate());
     }
 
     /**
