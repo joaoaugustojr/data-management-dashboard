@@ -11,6 +11,7 @@ import type { Payment } from "~/types/payment";
 export const usePaymentStore = defineStore("payments", () => {
   const payments = ref<Payment[]>([]);
   const loading = ref(false);
+  const total = ref(0);
 
   const statusOptions = ref([
     {
@@ -32,7 +33,7 @@ export const usePaymentStore = defineStore("payments", () => {
   ]);
 
   const loadPayments = async (params?: any) => {
-    const { columnFilters, hasFilters } = usePaymentTableStore();
+    const { columnFilters, page, hasFilters } = usePaymentTableStore();
 
     loading.value = true;
 
@@ -43,9 +44,17 @@ export const usePaymentStore = defineStore("payments", () => {
       };
     }
 
+    if (page) {
+      params = {
+        ...params,
+        page,
+      };
+    }
+
     try {
       const response = await getPayments(params);
       payments.value = response.data.value?.data as Payment[];
+      total.value = (response.data.value?.meta?.total || 1) as number;
     } catch (error: any) {
       throw new Error("Failed to load payments", error);
     } finally {
@@ -86,6 +95,7 @@ export const usePaymentStore = defineStore("payments", () => {
 
   return {
     payments,
+    total,
     statusOptions,
     loading,
     loadPayments,

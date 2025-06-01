@@ -44,6 +44,7 @@ const handleEdit = (row: Row<Payment>) => {
       </UCard>
       <UCard>
         <TablePayment @edit="handleEdit" />
+        <UiPaginatePayment />
       </UCard>
     </div>
     <UModal
