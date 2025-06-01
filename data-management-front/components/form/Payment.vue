@@ -3,8 +3,7 @@ import * as z from "zod";
 import type { FormSubmitEvent } from "@nuxt/ui";
 import type { AvatarProps } from "@nuxt/ui";
 import { refDebounced } from "@vueuse/core";
-import type { User } from "~/types/user";
-import { createPayment, updatePayment } from "~/services/payment";
+import { createPayment } from "~/services/payment";
 import type { Payment } from "~/types/payment";
 
 const { payment, isEdit = false } = defineProps<{
@@ -18,18 +17,16 @@ const paymentsStore = usePaymentStore();
 
 const { users } = toRefs(userStore);
 
-userStore.loadUsers();
+if (!isEdit) userStore.loadUsers();
 
 const usersOptions = ref<any[]>([]);
 
 watch(users, () => {
-  usersOptions.value = users.value.map((user) => ({
+  usersOptions.value = users.value.map((user: any) => ({
     label: user.name,
     id: user.id,
     avatar: { src: user.image } as AvatarProps,
   }));
-
-  console.log(usersOptions.value);
 });
 
 const searchTerm = ref("");
@@ -73,10 +70,28 @@ const state = reactive<Partial<Schema>>({
   amount: undefined,
 });
 
+watch(
+  () => payment,
+  () => {
+    if (!payment) return;
+    state.user_id = payment.user.id;
+    state.status = payment.status;
+    state.amount = payment.amount;
+
+    usersOptions.value.push([
+      {
+        label: payment.user.name,
+        id: payment.user.id,
+        avatar: { src: payment.user.image } as AvatarProps,
+      },
+    ]);
+  },
+  { immediate: true }
+);
+
 async function onSubmit(event: FormSubmitEvent<Schema>) {
-  if (isEdit) {
-    await updatePayment(event.data as Payment);
-    await paymentsStore.loadPayments();
+  if (isEdit && payment) {
+    await paymentsStore.updatePayment(payment.id, event.data as Payment);
 
     toast.add({
       title: "Success",
@@ -106,7 +121,6 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
 
 <template>
   <UForm :schema="schema" :state="state" class="space-y-4" @submit="onSubmit">
-    <pre>{{ payment }}</pre>
     <UFormField label="User" name="user_id">
       <USelectMenu
         v-model="state.user_id"
@@ -142,7 +156,9 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
     </UFormField>
 
     <div class="flex items-center justify-end">
-      <UButton type="submit"> Create </UButton>
+      <UButton type="submit">
+        {{ isEdit ? "Update" : "Create" }}
+      </UButton>
     </div>
   </UForm>
 </template>

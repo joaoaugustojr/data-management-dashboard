@@ -41,7 +41,6 @@ const themeIcon = computed(() => {
           </NuxtLink>
         </li>
       </ul>
-      <UiNavBarUser />
     </nav>
   </ClientOnly>
 </template>

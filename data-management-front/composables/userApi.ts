@@ -7,8 +7,6 @@ export async function useApi<T>(
   const config = useRuntimeConfig();
   const baseUrl = config.public.apiBase;
 
-  console.log("baseUrl", baseUrl);
-
   if (!baseUrl) {
     throw new Error("API URL is not configured");
   }

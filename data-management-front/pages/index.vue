@@ -1,130 +1,18 @@
 <script setup lang="ts">
-import { h, resolveComponent } from "vue";
-import type { TableColumn } from "@nuxt/ui";
-import type { Payment } from "~/types/payment";
 import type { Row } from "@tanstack/vue-table";
-
-const UBadge = resolveComponent("UBadge");
-const UButton = resolveComponent("UButton");
-const UDropdownMenu = resolveComponent("UDropdownMenu");
+import type { Payment } from "~/types/payment";
 
 const paymentsStore = usePaymentStore();
-const { payments } = toRefs(paymentsStore);
-
 paymentsStore.loadPayments();
 
-const toast = useToast();
-const showEditModal = ref(false);
 const payment = ref<Payment>();
+const showEditModal = ref(false);
 
-function getRowItems(row: Row<Payment>) {
-  return [
-    {
-      type: "label",
-      label: "Actions",
-    },
-    {
-      label: "Copy payment ID",
-      onSelect() {
-        navigator.clipboard.writeText(row.original.id);
-
-        toast.add({
-          title: "Payment ID copied to clipboard!",
-          color: "info",
-          icon: "i-lucide-circle-check",
-        });
-      },
-    },
-    {
-      type: "separator",
-    },
-    {
-      label: "Edit",
-      onSelect() {
-        payment.value = row.original;
-        showEditModal.value = true;
-      },
-    },
-    {
-      label: "Remove",
-      onSelect() {
-        paymentsStore.removePayment(row.original.id);
-        toast.add({
-          title: `Payment removed!`,
-          color: "success",
-          icon: "i-lucide-circle-check",
-        });
-      },
-    },
-  ];
-}
-
-const columns: TableColumn<Payment>[] = [
-  { header: "#", accessorKey: "id" },
-  {
-    header: "Date",
-    accessorKey: "created_at",
-    cell: ({ row }) => {
-      return useFormatDate(row.getValue("created_at"));
-    },
-  },
-  { header: "Name", accessorKey: "user.name" },
-  { header: "Email", accessorKey: "user.email" },
-  {
-    header: "Status",
-    accessorKey: "status",
-    cell: ({ row }) => {
-      const color = {
-        paid: "success" as const,
-        pending: "info" as const,
-        failed: "error" as const,
-        refunded: "neutral" as const,
-      }[row.getValue("status") as string];
-
-      return h(UBadge, { class: "capitalize", variant: "subtle", color }, () =>
-        row.getValue("status")
-      );
-    },
-  },
-  {
-    header: () => h("div", { class: "text-right" }, "Amount"),
-    accessorKey: "amount",
-    cell: ({ row }) => {
-      return h(
-        "div",
-        { class: "text-right font-medium" },
-        useFormatCurrency(Number.parseFloat(row.getValue("amount")))
-      );
-    },
-  },
-  {
-    id: "actions",
-    cell: ({ row }) => {
-      return h(
-        "div",
-        { class: "text-right" },
-        h(
-          UDropdownMenu,
-          {
-            content: {
-              align: "end",
-            },
-            items: getRowItems(row),
-            "aria-label": "Actions dropdown",
-          },
-          () =>
-            h(UButton, {
-              icon: "i-lucide-ellipsis-vertical",
-              color: "neutral",
-              variant: "ghost",
-              class: "ml-auto",
-              "aria-label": "Actions dropdown",
-            })
-        )
-      );
-    },
-  },
-];
+const handleEdit = (row: Row<Payment>) => {
+  payment.value = row.original;
+  payment.value.amount = parseFloat(row.getValue("amount"));
+  showEditModal.value = true;
+};
 </script>
 
 <template>
@@ -149,15 +37,7 @@ const columns: TableColumn<Payment>[] = [
           </UModal>
         </div>
       </UCard>
-      <UCard>
-        <UTable
-          :data="payments"
-          :columns
-          :loading="paymentsStore.loading"
-          loading-animation="carousel"
-          class="flex-1"
-        />
-      </UCard>
+      <UCard> <TablePayment @edit="handleEdit" />/ </UCard>
     </div>
     <UModal
       v-model:open="showEditModal"
