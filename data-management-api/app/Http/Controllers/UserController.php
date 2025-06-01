@@ -19,9 +19,9 @@ class UserController extends Controller
      */
     public function index(): UserCollection
     {
-        $cacheKey = 'user:page_' . request('page', 1) . ':filters_' . md5(json_encode(request()->all()));
+        $cacheKey = 'user:filters_' . md5(json_encode(request()->all()));
 
-        $users = Cache::remember($cacheKey, now()->addMinutes(10), function () {
+        $users = Cache::tags(['user'])->remember($cacheKey, now()->addMinutes(10), function () {
             return User::filter()->paginate();
         });
 

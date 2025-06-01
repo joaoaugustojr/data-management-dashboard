@@ -23,9 +23,9 @@ class PaymentController extends Controller
      */
     public function index(): PaymentCollection
     {
-        $cacheKey = 'payment:page_' . request('page', 1) . ':filters_' . md5(json_encode(request()->all()));
+        $cacheKey = 'payment:filters_' . md5(json_encode(request()->all()));
 
-        $payments = Cache::remember($cacheKey, now()->addMinutes(3), function () {
+        $payments = Cache::tags(['payment'])->remember($cacheKey, now()->addMinutes(3), function () {
             return Payment::filter()
                 ->orderBy('created_at', 'desc')
                 ->with('user')
