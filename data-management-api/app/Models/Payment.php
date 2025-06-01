@@ -32,9 +32,9 @@ class Payment extends Model
      * @var array<int, string>
      */
     protected $filters = [
-        'user_id',
+        'user_name',
+        'user_email',
         'status',
-        'email',
         'sort',
     ];
 
@@ -53,6 +53,34 @@ class Payment extends Model
     }
 
     /**
+     * Get filter by user name.
+     */
+    public function user_name($query, $value): mixed
+    {
+        $value = strtolower(trim($value));
+
+        if (empty($value)) return $query;
+
+        return $query->whereHas('user', function ($q) use ($value) {
+            $q->whereRaw('LOWER(name) LIKE ?', ['%' . $value . '%']);
+        });
+    }
+
+    /**
+     * Get filter by user email.
+     */
+    public function user_email($query, $value): mixed
+    {
+        $value = strtolower(trim($value));
+
+        if (empty($value)) return $query;
+
+        return $query->whereHas('user', function ($q) use ($value) {
+            $q->whereRaw('LOWER(email) LIKE ?', ['%' . $value . '%']);
+        });
+    }
+
+    /**
      * Get the sort of the payment.
      */
     public function sort($query, $value): mixed
@@ -60,15 +88,15 @@ class Payment extends Model
         [$field, $direction] = explode(',', $value);
 
         if ($field === 'user_email') {
-            return $query->select('payments.*')
-                ->join('users', 'payments.user_id', 'users.id')
-                ->orderBy('users.email', $direction);
+            return $query->whereHas('user', function ($q) use ($direction) {
+                $q->orderBy('email', $direction);
+            });
         }
 
         if ($field === 'user_name') {
-            return $query->select('payments.*')
-                ->join('users', 'payments.user_id', 'users.id')
-                ->orderBy('users.name', $direction);
+            return $query->whereHas('user', function ($q) use ($direction) {
+                $q->orderBy('name', $direction);
+            });
         }
 
         return $query->orderBy($field, $direction);

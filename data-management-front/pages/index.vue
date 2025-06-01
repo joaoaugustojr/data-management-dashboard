@@ -2,6 +2,11 @@
 import type { Row } from "@tanstack/vue-table";
 import type { Payment } from "~/types/payment";
 
+// TODO ADD PAGINATION
+// ADD DIALOG WHEM REMOVE DATA
+
+// TODO: BRING REDIS
+
 const paymentsStore = usePaymentStore();
 paymentsStore.loadPayments();
 
