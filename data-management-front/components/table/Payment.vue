@@ -17,8 +17,13 @@ const UBadge = resolveComponent("UBadge");
 const UDropdownMenu = resolveComponent("UDropdownMenu");
 
 const handleSort = async (column: Column<Payment>) => {
+  const direction =
+    !column.getNextSortingOrder() || column.getNextSortingOrder() === "asc"
+      ? "asc"
+      : "desc";
+
   await paymentsStore.loadPayments({
-    sort: `${column.id},${column.getNextSortingOrder()}`,
+    sort: `${column.id},${direction}`,
   });
 
   column.toggleSorting(column.getIsSorted() === "asc");
@@ -99,8 +104,18 @@ const columns: TableColumn<Payment>[] = [
       return useFormatDate(row.getValue("created_at"));
     },
   },
-  { header: "Name", accessorKey: "user.name" },
-  { header: "Email", accessorKey: "user.email" },
+  {
+    header: ({ column }) => {
+      return getSortedHeader(column, "Name", "-mx-2.5");
+    },
+    accessorKey: "user.name",
+  },
+  {
+    header: ({ column }) => {
+      return getSortedHeader(column, "Email", "-mx-2.5");
+    },
+    accessorKey: "user.email",
+  },
   {
     header: ({ column }) => {
       return getSortedHeader(column, "Status", "-mx-2.5");
