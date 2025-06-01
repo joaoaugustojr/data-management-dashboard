@@ -86,6 +86,11 @@ export const usePaymentStore = defineStore("payments", () => {
     try {
       await deletePayment(id);
       payments.value = payments.value.filter((payment) => payment.id !== id);
+
+      if (!payments.value.length) {
+        const { page } = toRefs(usePaymentTableStore());
+        page.value = 1;
+      }
     } catch (error: any) {
       throw new Error("Failed to remove payment", error);
     } finally {

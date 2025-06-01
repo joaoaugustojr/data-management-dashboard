@@ -3,8 +3,9 @@ import type { TableColumn } from "@nuxt/ui";
 import type { Payment } from "~/types/payment";
 import type { Column, Row } from "@tanstack/vue-table";
 
-const { onEdit } = defineProps<{
+const { onEdit, onRemove } = defineProps<{
   onEdit: (row: Row<Payment>) => void;
+  onRemove: (row: Row<Payment>) => void;
 }>();
 
 const toast = useToast();
@@ -87,12 +88,7 @@ const getRowItems = (row: Row<Payment>) => {
     {
       label: "Remove",
       onSelect() {
-        paymentsStore.removePayment(row.original.id);
-        toast.add({
-          title: `Payment removed!`,
-          color: "success",
-          icon: "i-lucide-circle-check",
-        });
+        onRemove(row);
       },
     },
   ];
