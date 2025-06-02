@@ -3,7 +3,6 @@ import * as z from "zod";
 import type { FormSubmitEvent } from "@nuxt/ui";
 import type { AvatarProps } from "@nuxt/ui";
 import { refDebounced } from "@vueuse/core";
-import { createPayment } from "~/services/payment";
 import type { Payment } from "~/types/payment";
 
 const { payment, isEdit = false } = defineProps<{
@@ -14,13 +13,14 @@ const { payment, isEdit = false } = defineProps<{
 const toast = useToast();
 const userStore = useUserStore();
 const paymentsStore = usePaymentStore();
+
+const usersOptions = ref<any[]>([]);
+
 const { statusOptions } = toRefs(paymentsStore);
 
 const { users } = toRefs(userStore);
 
 if (!isEdit) userStore.loadUsers();
-
-const usersOptions = ref<any[]>([]);
 
 watch(users, () => {
   usersOptions.value = users.value.map((user: any) => ({
@@ -71,7 +71,7 @@ watch(
   { immediate: true }
 );
 
-async function onSubmit(event: FormSubmitEvent<Schema>) {
+const onSubmit = async (event: FormSubmitEvent<Schema>) => {
   if (isEdit && payment) {
     await paymentsStore.updatePayment(payment.id, event.data as Payment);
 
@@ -97,12 +97,12 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
     description: "The form has been submitted.",
     color: "success",
   });
-}
+};
 </script>
 
 <template>
   <UForm :schema="schema" :state="state" class="space-y-4" @submit="onSubmit">
-    <UFormField label="User" name="user_id">
+    <UFormField label="User *" name="user_id">
       <USelectMenu
         v-model="state.user_id"
         icon="i-lucide-user"
@@ -115,7 +115,7 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
       />
     </UFormField>
 
-    <UFormField label="Amount" name="amount">
+    <UFormField label="Amount *" name="amount">
       <UInputNumber
         v-model="state.amount"
         :step="0.01"
@@ -127,7 +127,7 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
       />
     </UFormField>
 
-    <UFormField label="Status" name="status">
+    <UFormField label="Status *" name="status">
       <USelectMenu
         v-model="state.status"
         value-key="id"

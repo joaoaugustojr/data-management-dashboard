@@ -21,17 +21,6 @@ export const usePaymentTableStore = defineStore("table", () => {
     },
   });
 
-  const clearFilters = () => {
-    columnFilters.value.status = "";
-    columnFilters.value.user_name = "";
-    columnFilters.value.user_email = "";
-    page.value = 1;
-  };
-
-  const hasFilters = computed(() => {
-    return Object.values(columnFilters.value).some((v) => v);
-  });
-
   const columnFiltersDebounced = refDebounced(columnFilters, 200);
 
   watch(columnFiltersDebounced, () => {
@@ -46,6 +35,17 @@ export const usePaymentTableStore = defineStore("table", () => {
 
   watch(page, () => {
     paymentStore.loadPayments();
+  });
+
+  const clearFilters = () => {
+    columnFilters.value.status = "";
+    columnFilters.value.user_name = "";
+    columnFilters.value.user_email = "";
+    page.value = 1;
+  };
+
+  const hasFilters = computed(() => {
+    return Object.values(columnFilters.value).some((v) => v);
   });
 
   return { columnFilters, page, clearFilters, hasFilters };

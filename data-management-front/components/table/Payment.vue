@@ -10,13 +10,13 @@ const { onEdit, onRemove } = defineProps<{
 
 const toast = useToast();
 
-const paymentsStore = usePaymentStore();
-const { payments, statusOptions } = toRefs(paymentsStore);
-
 const UButton = resolveComponent("UButton");
 const UBadge = resolveComponent("UBadge");
 const UDropdownMenu = resolveComponent("UDropdownMenu");
 
+const paymentsStore = usePaymentStore();
+
+const { payments, statusOptions } = toRefs(paymentsStore);
 const { clearFilters } = usePaymentTableStore();
 const { columnFilters, hasFilters } = toRefs(usePaymentTableStore());
 
